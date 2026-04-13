@@ -23,9 +23,10 @@ int main() {
 	OrderBook ob;
 //	std::cout << "STARTING POSITION" << std::endl;
 //	std::cout << ob << std::endl;
-	std::cout << "GENERATING " << MAX_ORDERS << " RANDOM ORDERS\n";
+//	std::cout << "GENERATING " << MAX_ORDERS << " RANDOM ORDERS\n";
+	std::vector<Order> my_orders;
+	my_orders.reserve(MAX_ORDERS);
 
-	uint64_t start = get_timestamp();
 	for (int i = 0; i < MAX_ORDERS; ++i) {
 		/* Generate a new random order and print it */
 		Order tmp;
@@ -36,15 +37,24 @@ int main() {
 		tmp.side = side_dist(rng) ? Side::BID : Side::ASK;
 		/* ostream to be removed when measung performance */
 //		std::cout << tmp << std::endl;
-		ob.add_order(tmp);
+//		ob.add_order(tmp);
+		my_orders.push_back(tmp);
 	}
+
+	uint64_t start = get_timestamp();
+	/* Store the orders in the order book: relevant for performance */
+	for (const auto& i : my_orders) {
+		ob.add_order(i);
+	}
+
+
 //	std::cout << ob << std::endl;
 
 	/* Perform the matches and print a summary */
 	trades_done = ob.match_orders(my_trades);
 	end = get_timestamp();
 
-	std::cout << MAX_ORDERS << " orders processed and "
+	std::cout << MAX_ORDERS << " (random) orders processed and "
 		  << trades_done
 		  << " trades done in "
 		  << end - start << " nanoseconds ("
